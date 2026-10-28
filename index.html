@@ -1,0 +1,418 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Calibrate the Claim</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column, four stages stacked, each a self-contained task. */
+:root{
+  --paper:#f4f5f1; --card:#fbfbf8; --ink:#1c2629; --muted:#56646a; --line:#d3d9d4;
+  --accent:#0e5c63; --accent-soft:#dfeeed;
+  --boost:#8a3324; --hedge:#2e6b3f; --distance:#55478a; --warn:#7a5200;
+  --good:#21613a; --bad:#9b2c2c;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+body{
+  background:var(--paper); color:var(--ink);
+  font:400 15px/1.6 var(--sans);
+  padding-block:28px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:760px;margin:0 auto}
+header{border-bottom:1px solid var(--line);padding-bottom:20px}
+.kicker{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 40px/1.1 var(--serif);margin:10px 0 10px;text-wrap:balance}
+.lede{color:var(--muted);max-width:60ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font:400 13px/1.4 var(--mono);color:var(--muted)}
+nav.stages{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+nav.stages a{font:500 13px var(--sans);color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:4px;padding:6px 10px}
+nav.stages a:focus-visible,.btn:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin-top:20px}
+.rule h2{font:700 17px var(--serif);margin:0 0 6px}
+.rule ul{margin:6px 0 0;padding-left:20px}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px 20px;margin-top:20px;scroll-margin-top:16px}
+.stage-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:6px}
+.stage-num{font:500 12px var(--mono);color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.stage h2{font:700 24px/1.2 var(--serif);margin:0;text-wrap:balance}
+.goal{color:var(--muted);margin:0 0 14px;max-width:62ch}
+.btn{font:600 14px var(--sans);padding:9px 14px;border-radius:4px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.mini{font:500 12px var(--sans);padding:4px 9px;border-radius:4px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.mini:disabled{opacity:.35;cursor:default}
+.mini:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,textarea{font:400 14px var(--sans);color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-width:100%}
+textarea{width:100%;min-height:120px;resize:vertical;line-height:1.55}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+ol.ladder{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.idx{font:500 13px var(--mono);color:var(--muted);padding-top:2px}
+.stmt{margin:0}
+.data-wrap{overflow-x:auto;margin:6px 0 14px}
+table.data{width:100%;border-collapse:collapse;font:400 13px var(--mono);min-width:340px}
+table.data th,table.data td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.data th{font-weight:500;color:var(--muted)}
+table.data td.num{text-align:right}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.claim{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.claim:first-of-type{border-top:0}
+.cid{font:500 13px var(--mono);color:var(--muted);padding-top:2px}
+.repair{padding:16px 0;border-top:1px solid var(--line)}
+.repair:first-of-type{border-top:0;padding-top:4px}
+.label{font:500 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.quote{font:400 15px/1.5 var(--serif);margin:0;padding-left:12px;border-left:3px solid var(--line)}
+.fb{margin-top:14px;padding:12px 14px;border-left:3px solid var(--line);background:#fff;border-radius:0 4px 4px 0}
+.fb[hidden]{display:none}
+.fb.ok{border-left-color:var(--good)}
+.fb.chk{border-left-color:var(--warn)}
+.fb.bad{border-left-color:var(--bad)}
+.fb p{margin:0 0 6px}
+.fb p:last-child{margin-bottom:0}
+.fb ol,.fb ul{margin:6px 0 0;padding-left:20px}
+.fb li{margin-bottom:6px}
+.tag{font:500 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px;margin-right:6px;border:1px solid currentColor}
+.tag.Boost{color:var(--boost)}
+.tag.Neutral{color:var(--muted)}
+.tag.Hedge{color:var(--hedge)}
+.tag.Distance{color:var(--distance)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0 14px}
+.bank div{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+.bank h3{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.bank p{margin:0;font:400 14px/1.5 var(--serif)}
+.model{margin-top:10px;padding:10px 12px;background:var(--accent-soft);border-radius:4px}
+.model p{margin:0}
+#analysis{list-style:none;margin:10px 0 0;padding:0}
+#analysis li{padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+#analysis li:first-child{border-top:0}
+.pill{font:500 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px;margin-right:8px}
+.pill.ok{color:var(--good);border:1px solid var(--good)}
+.pill.chk{color:var(--warn);border:1px solid var(--warn)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font:400 13px var(--mono);color:var(--muted)}
+.stats strong{color:var(--ink);font-weight:500}
+footer{margin:28px 0 8px;font:400 13px/1.5 var(--sans);color:var(--muted)}
+@media (max-width:520px){
+  h1{font-size:32px}
+  .stage{padding:18px 14px}
+  .stage h2{font-size:21px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Academic Writing · Week 6–7 · Data Commentary</div>
+    <h1>Calibrate the Claim</h1>
+    <p class="lede">Practice matching the strength of a claim to what the evidence can support. You hedge the interpretation, never the data.</p>
+    <div class="meta">
+      <span>Pairs · about 35 min</span>
+      <span>Sample table: 120 students, self-report</span>
+    </div>
+    <nav class="stages" aria-label="Stages">
+      <a href="#stage-1">1 Hedge ladder</a>
+      <a href="#stage-2">2 Match to evidence</a>
+      <a href="#stage-3">3 Repair overclaims</a>
+      <a href="#stage-4">4 Write a highlight</a>
+    </nav>
+  </header>
+
+  <section class="rule" aria-label="Hedge bank">
+    <h2>Hedge bank</h2>
+    <div class="bank">
+      <div><h3>Modal verbs</h3><p>may, might, could</p></div>
+      <div><h3>Reporting verbs</h3><p>suggest, indicate, appear to</p></div>
+      <div><h3>Adjectives</h3><p>possible, probable, likely</p></div>
+      <div><h3>Attribution and limits</h3><p>respondents reported; the survey; self-reported; the sample</p></div>
+      <div><h3>Boosters (use with care)</h3><p>clearly, proves, cause</p></div>
+    </div>
+    <p class="note">Hedge placement matters as much as hedge choice. "58% of EE students report difficulty" keeps the figure plain. "The data may show difficulty" hedges the number, which is the error to avoid.</p>
+  </section>
+
+  <!-- STAGE 1 -->
+  <section class="stage" id="stage-1" aria-labelledby="s1-title">
+    <div class="stage-head"><span class="stage-num">Stage 1 · about 7 min</span><h2 id="s1-title">Hedge ladder</h2></div>
+    <p class="goal">Six versions of one claim are mixed up. Put them in order from strongest to weakest, then label each one.</p>
+    <ol class="ladder" id="ladder"></ol>
+    <div class="actions"><button class="btn" type="button" id="check1">Check order and labels</button></div>
+    <div class="fb" id="fb1" hidden aria-live="polite"></div>
+    <details id="key1" hidden><summary>Answer key and reasons</summary><ol id="key1-list"></ol></details>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="stage" id="stage-2" aria-labelledby="s2-title">
+    <div class="stage-head"><span class="stage-num">Stage 2 · about 8 min</span><h2 id="s2-title">Match hedge to evidence</h2></div>
+    <p class="goal">Read the table. For each claim, choose the minimum hedge the evidence requires. Self-report data and a sample of 30 per group limit how far a claim can go.</p>
+    <div class="data-wrap">
+      <table class="data">
+        <caption style="text-align:left;padding:0 0 8px;font:500 13px var(--sans);color:var(--ink)">Table 3 (sample): students reporting difficulty with EMI lectures</caption>
+        <thead><tr><th scope="col">Department</th><th scope="col" class="num">n</th><th scope="col" class="num">Reported difficulty</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Dept. EE</th><td class="num">30</td><td class="num">58%</td></tr>
+          <tr><th scope="row">Dept. IC</th><td class="num">30</td><td class="num">55%</td></tr>
+          <tr><th scope="row">Dept. A</th><td class="num">30</td><td class="num">20%</td></tr>
+          <tr><th scope="row">Dept. B</th><td class="num">30</td><td class="num">24%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Total n = 120. Overall, about 39% of students report difficulty. Method: self-report survey on a 5-point scale.</p>
+    <div id="claims2"></div>
+    <div class="actions"><button class="btn" type="button" id="check2">Check my choices</button></div>
+    <div class="fb" id="fb2" hidden aria-live="polite"></div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="stage" id="stage-3" aria-labelledby="s3-title">
+    <div class="stage-head"><span class="stage-num">Stage 3 · about 10 min</span><h2 id="s3-title">Repair the overclaim</h2></div>
+    <p class="goal">Each sentence has a specific problem. Name the error, then rewrite the sentence so its strength matches the evidence.</p>
+    <div id="repairs"></div>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="stage" id="stage-4" aria-labelledby="s4-title">
+    <div class="stage-head"><span class="stage-num">Stage 4 · about 10 min</span><h2 id="s4-title">Write a calibrated highlight</h2></div>
+    <p class="goal">Write one highlight (1–3 sentences) about Table 3. Include one hedge, one attribution or limitation, and leave the figures plain. The checker updates as you type.</p>
+    <label for="draft" class="label">Your highlight</label>
+    <textarea id="draft" placeholder="For example: Respondents in Dept. EE and IC reported much higher difficulty than those in Dept. A and B, which may point to a need for targeted language support."></textarea>
+    <div class="stats" aria-live="polite"><span>Words: <strong id="wc">0</strong></span><span>Reads as: <strong id="level">—</strong></span></div>
+    <ul id="analysis" aria-live="polite"></ul>
+    <p class="note">The checker looks for patterns. Use it to notice issues, then judge the claim yourself against the table.</p>
+  </section>
+
+  <footer>Facilitator note: pairs can compare their Stage 4 highlights and use the checker to explain why their calibration differs. Revisit Stage 3 if a pair's rewrites introduce a new overclaim.</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const $ = (s, r = document) => r.querySelector(s);
+  function el(tag, props = {}, kids = []) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === 'text') n.textContent = v;
+      else if (k === 'class') n.className = v;
+      else n.setAttribute(k, v);
+    }
+    for (const c of kids) n.append(c);
+    return n;
+  }
+  function btn(label, cls, fn) {
+    const b = el('button', { type: 'button', class: cls || 'btn', text: label });
+    b.addEventListener('click', fn);
+    return b;
+  }
+  function showFb(node, kind, lines) {
+    node.className = 'fb ' + kind;
+    node.replaceChildren(...lines.map(l => el('p', { text: l })));
+    node.hidden = false;
+  }
+
+  /* ---------- Stage 1: hedge ladder ---------- */
+  const LADDER = {
+    1: { text: 'EMI lectures clearly cause comprehension difficulty for EE and IC students.', label: 'Boost', why: 'Booster and bare causal verb. A survey cannot show cause this strongly.' },
+    2: { text: 'EMI lectures cause comprehension difficulty for EE and IC students.', label: 'Neutral', why: 'Plain causal claim with no hedge. Still stronger than the data supports.' },
+    3: { text: 'EMI lectures appear to contribute to comprehension difficulty for EE and IC students.', label: 'Hedge', why: 'Reporting verb plus "contribute" lowers the claim to association.' },
+    4: { text: 'EMI lectures may contribute to comprehension difficulty for EE and IC students.', label: 'Hedge', why: 'Modal verb signals uncertainty and keeps the claim defensible.' },
+    6: { text: 'Comprehension difficulty for EE and IC students is possibly linked to EMI lectures.', label: 'Hedge', why: 'Adjective hedge and "linked" describes association rather than cause.' },
+    5: { text: 'Some EE and IC students report comprehension difficulty, which may indicate a need for language support in EMI lectures.', label: 'Distance', why: 'Attribution to the students\' reports, then a hedged recommendation. The weakest version.' }
+  };
+  const ANSWER_ORDER = [1, 2, 3, 4, 6, 5];
+  const LABELS = ['Boost', 'Neutral', 'Hedge', 'Distance'];
+  let order = [5, 3, 1, 6, 2, 4];
+  const chosen = {};
+
+  function renderLadder() {
+    const list = $('#ladder');
+    list.replaceChildren();
+    order.forEach((id, i) => {
+      const item = LADDER[id];
+      const sel = el('select', { 'aria-label': 'Strength label for statement ' + (i + 1) });
+      sel.append(el('option', { value: '', text: 'Choose a label' }));
+      LABELS.forEach(l => sel.append(el('option', { value: l, text: l })));
+      sel.value = chosen[id] || '';
+      sel.addEventListener('change', () => { chosen[id] = sel.value; });
+      const up = btn('Up', 'mini', () => {
+        if (i > 0) { [order[i - 1], order[i]] = [order[i], order[i - 1]]; renderLadder(); }
+      });
+      up.disabled = i === 0;
+      const down = btn('Down', 'mini', () => {
+        if (i < order.length - 1) { [order[i + 1], order[i]] = [order[i], order[i + 1]]; renderLadder(); }
+      });
+      down.disabled = i === order.length - 1;
+      list.append(el('li', { class: 'row' }, [
+        el('span', { class: 'idx', text: String(i + 1) }),
+        el('div', {}, [
+          el('p', { class: 'stmt', text: item.text }),
+          el('div', { class: 'ctrl' }, [sel, up, down])
+        ])
+      ]));
+    });
+  }
+
+  $('#check1').addEventListener('click', () => {
+    const orderOk = order.every((id, i) => id === ANSWER_ORDER[i]);
+    const labelsOk = ANSWER_ORDER.filter(id => chosen[id] === LADDER[id].label).length;
+    const lines = [
+      orderOk ? 'Order: correct, strongest to weakest.' : 'Order: not yet. Look at which features make a claim stronger or weaker.',
+      'Labels: ' + labelsOk + ' of 6 correct.'
+    ];
+    if (labelsOk < 6) lines.push('Boosters and bare verbs raise strength. Modal verbs, reporting verbs, adjectives and attribution lower it.');
+    showFb($('#fb1'), orderOk && labelsOk === 6 ? 'ok' : 'chk', lines);
+    const kl = $('#key1-list');
+    kl.replaceChildren(...ANSWER_ORDER.map(id => {
+      const it = LADDER[id];
+      return el('li', {}, [el('span', { class: 'tag ' + it.label, text: it.label }), el('span', { text: it.why })]);
+    }));
+    $('#key1').hidden = false;
+  });
+
+  /* ---------- Stage 2: match hedge to evidence ---------- */
+  const OPTS2 = ['Plain', 'Light hedge', 'Strong hedge', 'Do not write'];
+  const CLAIMS2 = [
+    { id: 'a', text: 'Students in EE and IC report more comprehension difficulty than students in Depts. A and B.', key: 'Plain', why: 'The gap (55–58% vs. 20–24%) is large and consistent within each pair of departments. State it plainly with the figures.' },
+    { id: 'b', text: 'EMI lectures cause comprehension difficulty for EE and IC students.', key: 'Strong hedge', why: 'A survey shows association, not cause. A strong hedge, such as "appear to be linked to," matches this design.' },
+    { id: 'c', text: 'Self-reported difficulty shows that EE and IC students lack English proficiency.', key: 'Do not write', why: 'The survey measures perceived comprehension, not proficiency. The claim goes beyond the data.' },
+    { id: 'd', text: 'Half of all students struggle with EMI lectures.', key: 'Do not write', why: 'The overall figure is about 39%, not 50%. The claim misreads the table.' },
+    { id: 'e', text: 'Comprehension difficulty in EE and IC may point to a need for targeted language support in EMI lectures.', key: 'Light hedge', why: 'This is a recommendation drawn from a pattern. "May point to" keeps it proportionate.' },
+    { id: 'f', text: 'The survey measured students\' perceived comprehension, not their test performance.', key: 'Plain', why: 'A limitation stated plainly is a strength. Readers need it, and it does not need a hedge.' }
+  ];
+  const claimChoice = {};
+
+  (function renderClaims2() {
+    const box = $('#claims2');
+    CLAIMS2.forEach(c => {
+      const sel = el('select', { 'aria-label': 'Minimum hedge for claim ' + c.id.toUpperCase() });
+      sel.append(el('option', { value: '', text: 'Choose a hedge level' }));
+      OPTS2.forEach(o => sel.append(el('option', { value: o, text: o })));
+      sel.addEventListener('change', () => { claimChoice[c.id] = sel.value; });
+      box.append(el('div', { class: 'claim' }, [
+        el('span', { class: 'cid', text: c.id.toUpperCase() }),
+        el('div', {}, [el('p', { class: 'stmt', text: c.text }), el('div', { class: 'ctrl' }, [sel])])
+      ]));
+    });
+  })();
+
+  $('#check2').addEventListener('click', () => {
+    let right = 0;
+    const lines = CLAIMS2.map(c => {
+      const ok = claimChoice[c.id] === c.key;
+      if (ok) right++;
+      return (ok ? 'Correct' : 'Revisit') + ' (' + c.id.toUpperCase() + '): ' + (ok ? c.key + '. ' : 'the key is ' + c.key + '. ') + c.why;
+    });
+    lines.unshift(right + ' of ' + CLAIMS2.length + ' correct.');
+    showFb($('#fb2'), right === CLAIMS2.length ? 'ok' : 'chk', lines);
+  });
+
+  /* ---------- Stage 3: repair ---------- */
+  const OPTS3 = ['Overreach', 'Over-hedging', 'Hedged the data'];
+  const REPAIRS = [
+    { id: 'r1', text: 'This proves that EMI is the main cause of poor understanding.', error: 'Overreach', model: 'These findings suggest that EMI lectures may be one factor in the comprehension difficulties reported by EE and IC students.', why: '"Proves" and "main cause" claim far more than a survey can show.' },
+    { id: 'r2', text: 'It seems that perhaps the difficulty may possibly be somewhat related to EMI.', error: 'Over-hedging', model: 'The difficulty reported by EE and IC students appears to be linked to EMI lectures.', why: 'Four hedges stacked in one sentence blur the claim. One clear hedge is enough.' },
+    { id: 'r3', text: 'The table may show that 58% of students report difficulty.', error: 'Hedged the data', model: 'Table 3 shows that 58% of EE students report difficulty with EMI lectures.', why: 'The percentage is a fact in the table. Hedge the interpretation, not the number.' }
+  ];
+
+  (function renderRepairs() {
+    const box = $('#repairs');
+    REPAIRS.forEach((r, idx) => {
+      const sel = el('select', { 'aria-label': 'Error type for sentence ' + (idx + 1) });
+      sel.append(el('option', { value: '', text: 'Name the error' }));
+      OPTS3.forEach(o => sel.append(el('option', { value: o, text: o })));
+      const ta = el('textarea', { 'aria-label': 'Your rewrite of sentence ' + (idx + 1), rows: '3', placeholder: 'Rewrite the sentence here.' });
+      const fb = el('div', { class: 'fb', hidden: '', 'aria-live': 'polite' });
+      const modelBox = el('div', { class: 'model', hidden: '' });
+      const checkBtn = btn('Check error type', 'btn ghost', () => {
+        const ok = sel.value === r.error;
+        showFb(fb, ok ? 'ok' : 'chk', [
+          ok ? 'Correct: ' + r.error + '. ' + r.why : (sel.value ? 'Not quite. ' : 'Choose an error type first. ') + (ok ? '' : 'Reread the sentence and compare it with the three error types.')
+        ]);
+      });
+      const modelBtn = btn('Show model rewrite', 'btn ghost', () => {
+        modelBox.replaceChildren(el('p', { class: 'label', text: 'Model rewrite' }), el('p', { class: 'quote', text: r.model }));
+        modelBox.hidden = false;
+      });
+      box.append(el('div', { class: 'repair' }, [
+        el('div', { class: 'label', text: 'Sentence ' + (idx + 1) }),
+        el('p', { class: 'quote', text: r.text }),
+        el('div', { class: 'ctrl' }, [sel]),
+        el('div', { class: 'label', text: 'Your rewrite' }),
+        ta,
+        el('div', { class: 'actions' }, [checkBtn, modelBtn]),
+        fb,
+        modelBox
+      ]));
+    });
+  })();
+
+  /* ---------- Stage 4: live highlight checker ---------- */
+  const HEDGES = ['may', 'might', 'could', 'appear', 'appears', 'seem', 'seems', 'suggest', 'suggests', 'likely', 'possibly', 'possible', 'probably', 'probable', 'indicate', 'indicates', 'perhaps', 'somewhat', 'tend', 'tends', 'relatively'];
+  const BOOSTERS = ['clearly', 'proves', 'prove', 'certainly', 'definitely', 'undoubtedly', 'obviously', 'always', 'never', 'cause', 'causes', 'caused'];
+  const DISTANCE = ['report', 'reports', 'reported', 'respondents', 'participants', 'survey', 'self-reported', 'perceived', 'according', 'limitation', 'limited', 'sample'];
+
+  function analyze(text) {
+    const sentences = text.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
+    const items = [];
+    let hedges = 0, boosters = 0, distance = 0;
+    if (sentences.length === 0) return { items: [], level: '—', words: 0 };
+    if (sentences.length > 3) items.push({ s: 'chk', m: 'The highlight has ' + sentences.length + ' sentences. Aim for 1–3.' });
+    sentences.forEach(sent => {
+      const toks = sent.toLowerCase().match(/[a-z]+(?:-[a-z]+)*|\d+(?:\.\d+)?/g) || [];
+      const h = toks.filter(t => HEDGES.includes(t));
+      const b = toks.filter(t => BOOSTERS.includes(t));
+      hedges += h.length;
+      boosters += b.length;
+      distance += toks.filter(t => DISTANCE.includes(t)).length;
+      if (h.length >= 2) items.push({ s: 'chk', m: 'Stacked hedges in "' + sent + '". Keep one clear hedge.' });
+      toks.forEach((t, i) => {
+        if (/^\d/.test(t)) {
+          const before = toks.slice(Math.max(0, i - 4), i);
+          if (before.some(w => HEDGES.includes(w))) {
+            items.push({ s: 'chk', m: 'A hedge sits next to a figure in "' + sent + '". Keep figures plain and hedge the interpretation.' });
+          }
+        }
+      });
+      b.forEach(w => items.push({ s: 'chk', m: 'Booster "' + w + '" in "' + sent + '". Check that the evidence supports this strength.' }));
+    });
+    items.push(hedges === 0
+      ? { s: 'chk', m: 'No hedge yet. Self-report data from a sample of 120 usually calls for one.' }
+      : { s: 'ok', m: 'Hedge present.' });
+    items.push(distance === 0
+      ? { s: 'chk', m: 'No attribution or limitation. Try "respondents reported…" or name a limit of the survey.' }
+      : { s: 'ok', m: 'Attribution or limitation present.' });
+    const words = (text.match(/[A-Za-z’'\-]+/g) || []).length;
+    const level = boosters > 0 ? 'Boosted' : (hedges > 0 ? 'Hedged' : 'Plain');
+    return { items, level, words };
+  }
+
+  function renderAnalysis() {
+    const text = $('#draft').value;
+    const r = analyze(text);
+    $('#wc').textContent = String(r.words);
+    $('#level').textContent = r.level;
+    const list = $('#analysis');
+    list.replaceChildren();
+    if (!text.trim()) {
+      list.append(el('li', { text: 'Start writing to see feedback on hedging, attribution and figures.' }));
+      return;
+    }
+    r.items.forEach(it => {
+      list.append(el('li', {}, [
+        el('span', { class: 'pill ' + it.s, text: it.s === 'ok' ? 'OK' : 'Check' }),
+        el('span', { text: it.m })
+      ]));
+    });
+    list.append(el('li', {}, [
+      el('span', { class: 'pill chk', text: 'Target' }),
+      el('span', { text: 'For this table, a hedged interpretation with plain figures is usually the right level. Judge your own strength against the evidence.' })
+    ]));
+  }
+  $('#draft').addEventListener('input', renderAnalysis);
+
+  renderLadder();
+  renderAnalysis();
+})();
+</script>
+
+</body></html>
